@@ -73,13 +73,27 @@ while running:
             for x in range(CELLS_X):
                 inner = []
                 for y in range(CELLS_Y):
-                    inner.append([
-                        random.randint(128,255),
-                        random.randint(128,255),
-                        random.randint(128,255)
-                    ])
+
+                        inner.append([
+                            random.randint(128,255),
+                            random.randint(128,255),
+                            random.randint(128,255)
+                        ])
                 cells.append(inner)
-    
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
+            cells = []
+
+            for x in range(CELLS_X):
+                inner = []
+                for y in range(CELLS_Y):
+
+                        inner.append([
+                            random.randint(128,255),
+                            random.randint(128,255),
+                            random.randint(128,255)
+                        ])
+                cells.append(inner)
+                
     # Fill the screen with gray
     window.fill((128, 128, 128))
 
