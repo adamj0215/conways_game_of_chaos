@@ -88,12 +88,10 @@ while running:
                 for y in range(CELLS_Y):
 
                         inner.append([
-                            random.randint(128,255),
-                            random.randint(128,255),
-                            random.randint(128,255)
+                            0, 0, 0
                         ])
                 cells.append(inner)
-                
+
     # Fill the screen with gray
     window.fill((128, 128, 128))
 
