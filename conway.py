@@ -1,4 +1,5 @@
 # comments for reference in case i get rickrolled and need to recover my mentality
+from Tile import Tile, make_random_tile, make_random_tile_thats_on
 import pygame
 import random
 import math
@@ -24,14 +25,7 @@ cells = []
 for x in range(CELLS_X):
     inner = []
     for y in range(CELLS_Y):
-        if random.randint(0, 1) == 0:
-            inner.append([0,0,0])
-        else:
-            inner.append([
-                random.randint(128,255),
-                random.randint(128,255),
-                random.randint(128,255)
-            ])
+        inner.append(make_random_tile())
     cells.append(inner)
 
 REFRESH_DELAY = 5
@@ -52,19 +46,11 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             x = min(round(event.pos[0] / CELL_SIZE), len(cells) - 1)
             y = min(round(event.pos[1] / CELL_SIZE), len(cells[x]) - 1)
-            cells[x][y] = [
-                random.randint(128,255),
-                random.randint(128,255),
-                random.randint(128,255)
-            ]
+            cells[x][y] = make_random_tile_thats_on()
         if event.type == pygame.MOUSEMOTION and event.buttons[0]:
             x = min(round(event.pos[0] / CELL_SIZE), len(cells) - 1)
             y = min(round(event.pos[1] / CELL_SIZE), len(cells[x]) - 1)
-            cells[x][y] = [
-                random.randint(128,255),
-                random.randint(128,255),
-                random.randint(128,255)
-            ]
+            cells[x][y] = make_random_tile_thats_on()
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             frozen = not frozen
         if event.type == pygame.KEYDOWN and event.key == pygame.K_f:
@@ -74,11 +60,7 @@ while running:
                 inner = []
                 for y in range(CELLS_Y):
 
-                        inner.append([
-                            random.randint(128,255),
-                            random.randint(128,255),
-                            random.randint(128,255)
-                        ])
+                        inner.append(make_random_tile_thats_on())
                 cells.append(inner)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
             cells = []
@@ -87,9 +69,7 @@ while running:
                 inner = []
                 for y in range(CELLS_Y):
 
-                        inner.append([
-                            0, 0, 0
-                        ])
+                        inner.append(Tile())
                 cells.append(inner)
 
     # Fill the screen with gray
@@ -98,7 +78,7 @@ while running:
     # Draw each cell in a loop
     for x in range(len(cells)):
         for y in range(len(cells[x])):
-            pygame.draw.rect(window, cells[x][y], (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+            pygame.draw.rect(window, cells[x][y].color, (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
     # Show what we drew
     pygame.display.flip()
@@ -114,40 +94,39 @@ while running:
                 neighbors = 0
 
                 if y > 0:
-                    neighbors += 1 if not cells[x][y-1] == [0,0,0] else 0 # up
+                    neighbors += 1 if not cells[x][y-1].state == 'off' else 0 # up
                     if x > 0:
-                        neighbors += 1 if not cells[x-1][y-1] == [0,0,0] else 0 # up left
+                        neighbors += 1 if not cells[x-1][y-1].state == 'off' else 0 # up left
                     if x < len(cells) - 1:
-                        neighbors += 1 if not cells[x+1][y-1] == [0,0,0] else 0 # up right
+                        neighbors += 1 if not cells[x+1][y-1].state == 'off' else 0 # up right
                 if y < len(cells[x]) - 1:
-                    neighbors += 1 if not cells[x][y+1] == [0,0,0] else 0 # down
+                    neighbors += 1 if not cells[x][y+1].state == 'off' else 0 # down
                     if x > 0:
-                        neighbors += 1 if not cells[x-1][y+1] == [0,0,0] else 0 # down left
+                        neighbors += 1 if not cells[x-1][y+1].state == 'off' else 0 # down left
                     if x < len(cells) - 1:
-                        neighbors += 1 if not cells[x+1][y+1] == [0,0,0] else 0 # down right
+                        neighbors += 1 if not cells[x+1][y+1].state == 'off' else 0 # down right
                 if x > 0:
-                    neighbors += 1 if not cells[x-1][y] == [0,0,0] else 0 # left
+                    neighbors += 1 if not cells[x-1][y].state == 'off' else 0 # left
                 if x < len(cells) - 1:
-                    neighbors += 1 if not cells[x+1][y] == [0,0,0] else 0 # right
+                    neighbors += 1 if not cells[x+1][y].state == 'off' else 0 # right
 
                 # if 1 neighbor, it dies
                 if neighbors < 2:
-                    inner.append([0,0,0])
+                    inner.append(Tile())
                 
                 if neighbors == 2:
                     inner.append(cells[x][y])
                 
                 # if 3 neighbors, it is alive
                 if neighbors == 3:
-                    inner.append([
-                        random.randint(128,255),
-                        random.randint(128,255),
-                        random.randint(128,255)
-                    ])
+                    tile = make_random_tile()
+                    tile.turn_on()
+
+                    inner.append(tile)
 
                 # if more than 3, it dies
                 if neighbors > 3:
-                    inner.append([0,0,0])
+                    inner.append(Tile())
             new_cells.append(inner)
         cells = new_cells
         refresh_counter = REFRESH_DELAY
